@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders hello world ', () => {
+test('renders header', () => {
   render(<App />);
-  const helloWorld = screen.getByText(/Hello World/i);
-  expect(helloWorld).toBeInTheDocument();
+  const headerText = screen.getByText(/Idoven.ai Coding Challenge/i);
+  expect(headerText).toBeInTheDocument();
 });
