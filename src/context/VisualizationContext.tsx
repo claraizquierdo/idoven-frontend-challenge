@@ -1,8 +1,11 @@
 import { createContext, useReducer, ReactNode } from "react";
 
 export const ACTIONS = {
+  UPDATE_AUTOADJUST_Y: 'UPDATE_AUTOADJUST_Y',
   UPDATE_DATA: 'UPDATE_DATA',
-  UPDATE_IS_LOADING: 'UPDATE_IS_LOADING'
+  UPDATE_IS_LOADING: 'UPDATE_IS_LOADING',
+  UPDATE_ZOOM: 'UPDATE_ZOOM',
+  UPDATE_RANGE: 'UPDATE_RANGE'
 } as const;
 
 
@@ -17,22 +20,34 @@ export interface Row {
 }
 
 interface State {
+  autoadjustY: boolean,
   data: Row[];
   isLoading: boolean;
+  range: number[];
+  zoom: number;
 }
 
 interface Action {
   type: string,
-  payload?: Row[] | boolean
+  payload?: Row[] | boolean | number | number[]
 }
 
 const DEFAULT_STATE: State = {
+  autoadjustY: false,
   data: [],
   isLoading: false,
+  range: [0, 10000],
+  zoom: 1000
 };
 
 const stateReducer = (state: State, action: Action): State => {
   switch (action.type) {
+    case ACTIONS.UPDATE_AUTOADJUST_Y: {
+      return {
+        ...state,
+        autoadjustY: action.payload as boolean
+      };
+    }
     case ACTIONS.UPDATE_DATA: {
       if (action.payload) {
         return {
@@ -46,6 +61,18 @@ const stateReducer = (state: State, action: Action): State => {
       return {
         ...state,
         isLoading: action.payload as boolean
+      };
+    }
+    case ACTIONS.UPDATE_RANGE: {
+      return {
+        ...state,
+        range: action.payload as number[]
+      };
+    }
+    case ACTIONS.UPDATE_ZOOM: {
+      return {
+        ...state,
+        zoom: action.payload as number
       };
     }
     default:
