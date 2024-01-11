@@ -1,4 +1,3 @@
-import './App.css';
 import Box from '@mui/system/Box';
 import Typography from '@mui/material/Typography';
 import Visualization from './components/Visualization';
