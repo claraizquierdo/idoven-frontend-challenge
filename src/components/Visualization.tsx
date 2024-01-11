@@ -2,15 +2,31 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { LineChart } from '@mui/x-charts/LineChart';
 import Papa from 'papaparse';
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
 
 import Loading from './Loading';
 import VisualizationContext, { ACTIONS, Row, Context } from '../context/VisualizationContext';
+import VisualizationControls from './VisualizationControls';
 
 
 function Visualization() {
   const { state, dispatch } = useContext(VisualizationContext) as Context;
-  const { data, isLoading } = state;
+  const { autoadjustY, data, isLoading, range } = state;
+
+  const filteredData = useMemo(() => {
+    let result = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].time > range[1]) {
+        break;
+      }
+
+      if (data[i].time > range[0]) {
+        result.push(data[i]);
+      }
+    }
+
+    return result;
+  }, [data, range])
 
   useEffect(() => {
     if (data.length === 0) {
@@ -41,7 +57,7 @@ function Visualization() {
                 })
             }
           }
-          
+
         },
         complete: function () {
           dispatch({ type: ACTIONS.UPDATE_DATA, payload: myTemporalData });
@@ -60,13 +76,20 @@ function Visualization() {
           <Box sx={{ mb: 5 }}>
             <LineChart
               // @ts-ignore
-              dataset={data}
+              dataset={filteredData}
               xAxis={[{ dataKey: 'time' }]}
-              yAxis={[{ dataKey: 'signal' }]}
+              yAxis={autoadjustY ? [{ dataKey: 'signal' }] : [
+                {
+                  dataKey: 'signal',
+                  min: -35000,
+                  max: 35000,
+                },
+              ]}
               series={[{ dataKey: 'signal', showMark: false, }]}
               height={600}
               width={1200}
             />
+            <VisualizationControls />
           </Box>
         </>
       )}
