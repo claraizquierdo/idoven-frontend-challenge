@@ -15,27 +15,27 @@ function VisualizationControls() {
 
   const handleRangeChange = (event: Event, value: number | number[]): void => {
     if (Array.isArray(value) && value.length > 0) {
-      dispatch({type: ACTIONS.UPDATE_RANGE, payload: value});
-      dispatch({type: ACTIONS.UPDATE_ZOOM, payload: value[1] - value[0]});
+      dispatch({ type: ACTIONS.UPDATE_RANGE, payload: value });
+      dispatch({ type: ACTIONS.UPDATE_ZOOM, payload: value[1] - value[0] });
     }
   };
 
   const handleAutoadjustY = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({type: ACTIONS.UPDATE_AUTOADJUST_Y, payload: event.target.checked});
+    dispatch({ type: ACTIONS.UPDATE_AUTOADJUST_Y, payload: event.target.checked });
   };
 
   const handleNext = () => {
     const newValue = [range[0] + zoom, range[1] + zoom];
-    dispatch({type: ACTIONS.UPDATE_RANGE, payload: newValue});
+    dispatch({ type: ACTIONS.UPDATE_RANGE, payload: newValue });
   }
 
   const handlePrevious = () => {
     const newValue = [range[0] - zoom, range[1] - zoom];
-    dispatch({type: ACTIONS.UPDATE_RANGE, payload: newValue});
+    dispatch({ type: ACTIONS.UPDATE_RANGE, payload: newValue });
   }
 
   return (
-    <>
+    <Box data-testid="visualization-controls">
       <Slider
         value={range}
         onChange={handleRangeChange}
@@ -43,6 +43,7 @@ function VisualizationControls() {
         min={0}
         max={180000}
         disableSwap
+        data-testid="slider"
       />
       <Box sx={{
         display: 'flex',
@@ -71,7 +72,7 @@ function VisualizationControls() {
           {`> Next ${zoom} milliseconds`}
         </Button>
       </Box>
-    </>
+    </Box>
   );
 }
 

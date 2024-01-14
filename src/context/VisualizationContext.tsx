@@ -78,7 +78,7 @@ const stateReducer = (state: State, action: Action): State => {
 
 
 
-const VisualizationContext = createContext<Context | null>(null);
+export const VisualizationContext = createContext<Context | null>(null);
 
 export const VisualizationProvider = function ({ children }: { children: ReactNode }) {
 

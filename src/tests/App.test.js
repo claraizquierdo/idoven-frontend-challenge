@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import App from '../App';
+import {VisualizationProvider }from '../context/VisualizationContext';
 
 describe('App', () => {
   beforeAll(() => {
@@ -12,7 +13,11 @@ describe('App', () => {
   });
 
   test('renders header', () => {
-    render(<App />);
+    render(
+      <VisualizationProvider>
+        <App />
+      </VisualizationProvider>
+    );
     const headerText = screen.getByText(/Idoven.ai Coding Challenge/i);
     expect(headerText).toBeInTheDocument();
   });

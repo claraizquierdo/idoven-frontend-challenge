@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Papa from 'papaparse';
 import { useState, useContext, ChangeEventHandler } from "react";
 import VisualizationContext, { ACTIONS, Context } from '../context/VisualizationContext';
+import { concatData } from "../utils/utils"
 
 function parseChunk(chunk: string[]): Int16Array {
   const result = new Int16Array(chunk.length);
@@ -13,19 +14,6 @@ function parseChunk(chunk: string[]): Int16Array {
   });
   return result;
 }
-
-function concatData(setOfArrays: Array<Int16Array>): Int16Array {
-  const len = setOfArrays.reduce((acc, v) => acc + v.length, 0);
-  const data = new Int16Array(len);
-
-  let i = 0;
-  setOfArrays.forEach(v => {
-    data.set(v, i);
-    i += v.length;
-  });
-  return data;
-}
-
 
 const InputFile = () => {
   const [readLines, setReadLines] = useState(0);
@@ -78,6 +66,7 @@ const InputFile = () => {
         sx={{ pt: 2 }}
         type="file"
         onChange={handleFileChange}
+        placeholder="Select your file"
       ></Input>
       <Box sx={{ pt: 2 }}>
         <span>Processed lines: {readLines}</span>

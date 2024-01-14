@@ -3,9 +3,7 @@ import Typography from '@mui/material/Typography';
 import Visualization from './components/Visualization';
 import InputFile from './components/InputFile';
 import VisualizationContext, { Context } from './context/VisualizationContext';
-
 import { useContext} from "react";
-
 
 function App() {
   const { state } = useContext(VisualizationContext) as Context;

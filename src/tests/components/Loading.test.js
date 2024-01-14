@@ -3,6 +3,11 @@ import Loading from '../../components/Loading';
 
 test('renders loading text', () => {
   render(<Loading />);
-  const loadingText = screen.getByText(/Loading ECG data.../i);
-  expect(loadingText).toBeInTheDocument();
+  const headingElement = screen.getByRole('heading', { level: 4, name: /Loading ECG data.../i });
+  const descriptionElement = screen.getByText(/Please wait. It can take some time./i);
+  const circularProgressElement = screen.getByRole('progressbar');
+
+  expect(headingElement).toBeInTheDocument();
+  expect(descriptionElement).toBeInTheDocument();
+  expect(circularProgressElement).toBeInTheDocument();
 });
