@@ -2,7 +2,7 @@ import { createContext, useReducer, ReactNode } from "react";
 
 export const ACTIONS = {
   UPDATE_AUTOADJUST_Y: 'UPDATE_AUTOADJUST_Y',
-  UPDATE_DATA: 'UPDATE_DATA',
+  UPDATE_ORIGINAL_DATA: 'UPDATE_ORIGINAL_DATA',
   UPDATE_IS_LOADING: 'UPDATE_IS_LOADING',
   UPDATE_ZOOM: 'UPDATE_ZOOM',
   UPDATE_RANGE: 'UPDATE_RANGE'
@@ -14,14 +14,9 @@ export interface Context {
   dispatch: React.Dispatch<Action>
 }
 
-export interface Row {
-  time: number;
-  signal: number;
-}
-
 interface State {
   autoadjustY: boolean,
-  data: Row[];
+  originalData: Int16Array;
   isLoading: boolean;
   range: number[];
   zoom: number;
@@ -29,15 +24,15 @@ interface State {
 
 interface Action {
   type: string,
-  payload?: Row[] | boolean | number | number[]
+  payload?: boolean | number | number[] | Int16Array
 }
 
 const DEFAULT_STATE: State = {
   autoadjustY: false,
-  data: [],
+  originalData: new Int16Array(),
   isLoading: false,
   range: [0, 10000],
-  zoom: 1000
+  zoom: 10000
 };
 
 const stateReducer = (state: State, action: Action): State => {
@@ -48,11 +43,12 @@ const stateReducer = (state: State, action: Action): State => {
         autoadjustY: action.payload as boolean
       };
     }
-    case ACTIONS.UPDATE_DATA: {
+    case ACTIONS.UPDATE_ORIGINAL_DATA: {
+      console.log(action.payload)
       if (action.payload) {
         return {
           ...state,
-          data: action.payload as Row[]
+          originalData: action.payload as Int16Array
         };
       }
       return state;

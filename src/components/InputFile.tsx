@@ -4,7 +4,27 @@ import Typography from '@mui/material/Typography';
 
 import Papa from 'papaparse';
 import { useState, useContext, ChangeEventHandler } from "react";
-import VisualizationContext, { ACTIONS, Row, Context } from '../context/VisualizationContext';
+import VisualizationContext, { ACTIONS, Context } from '../context/VisualizationContext';
+
+function parseChunk(chunk: string[]): Int16Array {
+  const result = new Int16Array(chunk.length);
+  chunk.forEach((line, i) => {
+    result[i] = parseInt(line[1]);
+  });
+  return result;
+}
+
+function concatData(setOfArrays: Array<Int16Array>): Int16Array {
+  const len = setOfArrays.reduce((acc, v) => acc + v.length, 0);
+  const data = new Int16Array(len);
+
+  let i = 0;
+  setOfArrays.forEach(v => {
+    data.set(v, i);
+    i += v.length;
+  });
+  return data;
+}
 
 
 const InputFile = () => {
@@ -17,37 +37,30 @@ const InputFile = () => {
     const file = event?.target?.files[0];
 
     dispatch({ type: ACTIONS.UPDATE_IS_LOADING, payload: true });
-    let myTemporalData: Row[] = [];
+    let firstLineremoved = false;
+    const setOfArrays: Array<Int16Array> = [];
 
     Papa.parse(file, {
       dynamicTyping: true,
       fastMode: true,
-      header: true,
       chunk: function (results) {
         if (results.data && results.data.length) {
+
+          if (!firstLineremoved) {
+            results.data.shift();
+            firstLineremoved = true;
+          }
           setReadLines(v => v + results.data.length);
-          let indexes: number[] = [];
 
-          for (let i = 0; i < 100; i++) {
-            indexes.push(Math.floor(i * results.data.length / 100))
-          }
-
-          for (let i = 0; i < indexes.length; i++) {
-
-            myTemporalData.push(
-              {
-                // @ts-ignore
-                time: results.data[indexes[i]]["Time"],
-                // @ts-ignore
-                signal: results.data[indexes[i]]["1"]
-              })
-          }
+          const parsedArray = parseChunk(results.data as string[]);
+          setOfArrays.push(parsedArray);
         }
 
       },
       complete: function () {
-        dispatch({ type: ACTIONS.UPDATE_DATA, payload: myTemporalData });
+        const totalData = concatData(setOfArrays);
         dispatch({ type: ACTIONS.UPDATE_IS_LOADING, payload: false });
+        dispatch({ type: ACTIONS.UPDATE_ORIGINAL_DATA, payload: totalData })
       }
     });
   }

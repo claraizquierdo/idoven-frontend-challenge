@@ -1,71 +1,61 @@
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { LineChart } from '@mui/x-charts/LineChart';
-import Papa from 'papaparse';
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useMemo } from "react";
 
 import Loading from './Loading';
-import VisualizationContext, { ACTIONS, Row, Context } from '../context/VisualizationContext';
+import VisualizationContext, { Context } from '../context/VisualizationContext';
 import VisualizationControls from './VisualizationControls';
+
+const GRAPH_WIDTH = 1200;
+// In the original data, the samples are taken every 0.04 millisecons
+const MILLISECONDS_BETWEEN_ORIGINAL_SAMPLES = 0.004;
+
+function downsample(samples: Int16Array, totalSamples: number): Int16Array {
+  let copyOfSamples = samples.slice();
+  if (samples.length <= totalSamples) {
+    return copyOfSamples;
+  }
+
+  const result = new Int16Array(totalSamples);
+  const reductionRate = Math.floor(copyOfSamples.length / totalSamples);
+
+  for (let i = 0; i < totalSamples; i++) {
+    const offset = i * reductionRate
+    if (offset > copyOfSamples.length) {
+      break;
+    }
+    result[i] = copyOfSamples[offset];
+  }
+  return result;
+}
+
+function transformMilisecondsToDataIndex(milliseconds: number) {
+  return Math.floor(milliseconds / MILLISECONDS_BETWEEN_ORIGINAL_SAMPLES);
+}
+
+function pairSamplesWithTime(samples: Int16Array, timeBetweenSamples: number, offsetTime: number = 0) {
+  return Array.from(samples).map((v, i) => ({ time: offsetTime + (i * timeBetweenSamples), signal: v }));
+}
 
 
 function Visualization() {
-  const { state, dispatch } = useContext(VisualizationContext) as Context;
-  const { autoadjustY, data, isLoading, range } = state;
+  const { state } = useContext(VisualizationContext) as Context;
+  const { autoadjustY, originalData, isLoading, range } = state;
 
   const filteredData = useMemo(() => {
-    let result = [];
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].time > range[1]) {
-        break;
-      }
+    const numberOfSamples = GRAPH_WIDTH;
+    const rangeFirstIndex: number = transformMilisecondsToDataIndex(range[0]);
+    const rangeLasterIndex: number = transformMilisecondsToDataIndex(range[1]);
+    const zoomedSamples = originalData.subarray(rangeFirstIndex, rangeLasterIndex);
+    const downsampledValues = downsample(zoomedSamples, numberOfSamples);
+    const reductionRate = Math.floor(zoomedSamples.length / numberOfSamples);
+    const millisecondsBetweenSamples = MILLISECONDS_BETWEEN_ORIGINAL_SAMPLES * reductionRate;
 
-      if (data[i].time > range[0]) {
-        result.push(data[i]);
-      }
-    }
+    const result = pairSamplesWithTime(downsampledValues, millisecondsBetweenSamples, rangeFirstIndex * MILLISECONDS_BETWEEN_ORIGINAL_SAMPLES);
 
     return result;
-  }, [data, range])
-
-  // useEffect(() => {
-  //   if (data.length === 0) {
-  //     dispatch({ type: ACTIONS.UPDATE_IS_LOADING, payload: true });
-  //     let myTemporalData: Row[] = [];
-
-  //     Papa.parse("small.csv", {
-  //       download: true,
-  //       dynamicTyping: true,
-  //       fastMode: true,
-  //       header: true,
-  //       chunk: function (results) {
-  //         if (results.data && results.data.length) {
-  //           let indexes: number[] = [];
-
-  //           for (let i = 0; i < 100; i++) {
-  //             indexes.push(Math.floor(i * results.data.length / 100))
-  //           }
-
-  //           for (let i = 0; i < indexes.length; i++) {
-
-  //             myTemporalData.push(
-  //               {
-  //                 // @ts-ignore
-  //                 time: results.data[indexes[i]]["Time"],
-  //                 // @ts-ignore
-  //                 signal: results.data[indexes[i]]["1"]
-  //               })
-  //           }
-  //         }
-
-  //       },
-  //       complete: function () {
-  //         dispatch({ type: ACTIONS.UPDATE_DATA, payload: myTemporalData });
-  //         dispatch({ type: ACTIONS.UPDATE_IS_LOADING, payload: false });
-  //       }
-  //     });
-  //   }
-  // }, []);
+  }, [originalData, range])
 
   return (
     <Container sx={{ mt: 5 }}>
@@ -87,7 +77,7 @@ function Visualization() {
               ]}
               series={[{ dataKey: 'signal', showMark: false, }]}
               height={600}
-              width={1200}
+              width={GRAPH_WIDTH}
             />
             <VisualizationControls />
           </Box>
