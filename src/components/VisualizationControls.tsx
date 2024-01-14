@@ -6,11 +6,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
 import { useContext } from 'react';
-import VisualizationContext, { ACTIONS, Context } from '../context/VisualizationContext';
+import VisualizationContext, { ACTIONS } from '../context/VisualizationContext';
 
 
 function VisualizationControls() {
-  const { state, dispatch } = useContext(VisualizationContext) as Context;
+  const { state, dispatch } = useContext(VisualizationContext)!;
   const { autoadjustY, range, zoom, useMean } = state;
 
   const handleRangeChange = (event: Event, value: number | number[]): void => {

@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 import Papa from 'papaparse';
 import { useState, useContext, ChangeEventHandler } from "react";
-import VisualizationContext, { ACTIONS, Context } from '../context/VisualizationContext';
+import VisualizationContext, { ACTIONS } from '../context/VisualizationContext';
 import { concatData } from "../utils/utils"
 
 function parseChunk(chunk: string[]): Int16Array {
@@ -18,11 +18,10 @@ function parseChunk(chunk: string[]): Int16Array {
 const InputFile = () => {
   const [readLines, setReadLines] = useState(0);
 
-  const { dispatch } = useContext(VisualizationContext) as Context;
+  const { dispatch } = useContext(VisualizationContext)!;
 
   const handleFileChange: ChangeEventHandler<| HTMLInputElement> = (event) => {
-    //@ts-ignore
-    const file = event?.target?.files[0];
+    const file = event?.target?.files![0];
 
     dispatch({ type: ACTIONS.UPDATE_IS_LOADING, payload: true });
     let firstLineremoved = false;
