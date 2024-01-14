@@ -53,7 +53,6 @@ const stateReducer = (state: State, action: Action): State => {
       };
     }
     case ACTIONS.UPDATE_ORIGINAL_DATA: {
-      console.log(action.payload)
       if (action.payload) {
         return {
           ...state,
