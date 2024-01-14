@@ -1,9 +1,17 @@
 import Box from '@mui/system/Box';
 import Typography from '@mui/material/Typography';
 import Visualization from './components/Visualization';
+import InputFile from './components/InputFile';
 import { VisualizationProvider } from './context/VisualizationContext';
+import VisualizationContext, { ACTIONS, Row, Context } from './context/VisualizationContext';
+
+import { useContext} from "react";
+
 
 function App() {
+  const { state } = useContext(VisualizationContext) as Context;
+  const { data } = state;
+
   return (
     <>
       <Box
@@ -24,9 +32,11 @@ function App() {
       <Box
         component="main"
       >
-        <VisualizationProvider>
+        {data.length === 0 ? (
+          <InputFile />
+        ) : (
           <Visualization />
-        </VisualizationProvider>
+        )}
       </Box>
     </>
   );
