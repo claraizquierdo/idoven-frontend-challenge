@@ -1,4 +1,4 @@
-import { concatData, downsample } from '../../utils/utils'; // Make sure to replace 'your-file-name' with the actual file name
+import { concatData, downsample, downsampleWithMean } from '../../utils/utils';
 
 describe('concatData', () => {
   test('should concatenate multiple Int16Array into a single Int16Array', () => {
@@ -40,6 +40,46 @@ describe('downsample', () => {
     const result = downsample(inputSamples, totalSamples);
 
     const expectedResult = new Int16Array([1, 3, 5, 7, 9]);
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  test('should return the same array if totalSamples is greater than or equal to the length of samples', () => {
+    const inputSamples = new Int16Array([1, 2, 3, 4, 5]);
+    const totalSamples = 5;
+
+    const result = downsample(inputSamples, totalSamples);
+
+    expect(result).toEqual(inputSamples);
+  });
+
+  test('should handle downsampling of an empty array', () => {
+    const inputSamples = new Int16Array([]);
+    const totalSamples = 5;
+
+    const result = downsample(inputSamples, totalSamples);
+
+    expect(result).toEqual(inputSamples);
+  });
+
+  test('should handle downsampling with totalSamples larger than inputSamples length', () => {
+    const inputSamples = new Int16Array([1, 2, 3]);
+    const totalSamples = 5;
+
+    const result = downsample(inputSamples, totalSamples);
+
+    expect(result).toEqual(inputSamples);
+  });
+});
+
+describe('downsample with mean', () => {
+  test('should downsample samples with mean correctly', () => {
+    const inputSamples = new Int16Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    const totalSamples = 5;
+
+    const result = downsampleWithMean(inputSamples, totalSamples);
+
+    const expectedResult = new Int16Array([1, 1, 3, 5, 7]);
 
     expect(result).toEqual(expectedResult);
   });

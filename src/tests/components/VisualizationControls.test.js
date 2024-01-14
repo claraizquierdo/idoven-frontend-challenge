@@ -11,6 +11,7 @@ describe('VisualizationControls', () => {
       autoadjustY: false,
       range: [0, 1000],
       zoom: 100,
+      useMean: false
     },
     dispatch: jest.fn(),
   };
@@ -29,8 +30,10 @@ describe('VisualizationControls', () => {
     const nextButton = screen.getByRole('button', {
       name: /NEXT 10000 MILLISECONDS/i
     });
-    const adjustCheckbox = screen.queryByRole("checkbox");
+    const adjustCheckbox = screen.getByTestId(/autoadjustY/i);
     const adjustCheckboxLabel = screen.getByText(/Adjust Y axis values to selection/i);
+    const useMeanCheckbox = screen.getByTestId(/useMean/i);
+    const useMeanCheckboxLabel = screen.getByText(/Use mean when downsampling/i);
 
     expect(slider).toBeInTheDocument();
     expect(previousButton).toBeInTheDocument();
@@ -38,6 +41,8 @@ describe('VisualizationControls', () => {
     expect(nextButton).toBeInTheDocument();
     expect(adjustCheckbox).not.toBeChecked();
     expect(adjustCheckboxLabel).toBeInTheDocument();
+    expect(useMeanCheckbox).not.toBeChecked();
+    expect(useMeanCheckboxLabel).toBeInTheDocument();
   });
 
   test('handle autoadjustY change', () => {
@@ -47,11 +52,25 @@ describe('VisualizationControls', () => {
       </VisualizationContext.Provider>
     );
 
-    const checkboxElement = screen.getByRole('checkbox');
+    const checkboxElement = screen.getByTestId(/autoadjustY/i);
 
     fireEvent.click(checkboxElement);
 
     expect(mockContext.dispatch).toHaveBeenCalledWith({ type: ACTIONS.UPDATE_AUTOADJUST_Y, payload: true });
+  });
+
+  test('handle use mean change', () => {
+    render(
+      <VisualizationContext.Provider value={mockContext}>
+        <VisualizationControls />
+      </VisualizationContext.Provider>
+    );
+
+    const checkboxElement = screen.getByTestId(/useMean/i);
+
+    fireEvent.click(checkboxElement);
+
+    expect(mockContext.dispatch).toHaveBeenCalledWith({ type: ACTIONS.UPDATE_USE_MEAN, payload: true });
   });
 
   test('handles next button click', () => {

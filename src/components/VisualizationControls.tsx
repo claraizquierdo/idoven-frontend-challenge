@@ -70,12 +70,14 @@ function VisualizationControls() {
             <Checkbox
               checked={autoadjustY}
               onChange={handleAutoadjustY}
+              data-testid="autoadjustY"
             />
           } label="Adjust Y axis values to selection" />
           <FormControlLabel control={
             <Checkbox
               checked={useMean}
               onChange={handleUseMean}
+              data-testid="useMean"
             />
           } label="Use mean when downsampling" />
         </Box>

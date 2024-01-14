@@ -52,7 +52,7 @@ export const downsampleWithMean = (samples: Int16Array, totalSamples: number): I
       const previousOffset = (i-1) * reductionRate;
       let totalSamplesPortion = samples.slice(previousOffset, offset);
       let sum = totalSamplesPortion.reduce((acc, curr) => acc + curr, 0);
-      const average = sum / totalSamplesPortion.length;
+      const average = Math.floor(sum / totalSamplesPortion.length);
       result[i] = average;
     }
     
