@@ -28,7 +28,6 @@ const InputFile = () => {
     const setOfArrays: Array<Int16Array> = [];
 
     Papa.parse(file, {
-      dynamicTyping: true,
       fastMode: true,
       chunk: function (results) {
         if (results.data && results.data.length) {
