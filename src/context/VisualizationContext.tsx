@@ -2,6 +2,7 @@ import { createContext, useReducer, ReactNode } from "react";
 
 export const ACTIONS = {
   UPDATE_AUTOADJUST_Y: 'UPDATE_AUTOADJUST_Y',
+  UPDATE_USE_MEAN: 'UPDATE_USE_MEAN',
   UPDATE_ORIGINAL_DATA: 'UPDATE_ORIGINAL_DATA',
   UPDATE_IS_LOADING: 'UPDATE_IS_LOADING',
   UPDATE_ZOOM: 'UPDATE_ZOOM',
@@ -20,6 +21,7 @@ interface State {
   isLoading: boolean;
   range: number[];
   zoom: number;
+  useMean: boolean;
 }
 
 interface Action {
@@ -32,7 +34,8 @@ const DEFAULT_STATE: State = {
   originalData: new Int16Array(),
   isLoading: false,
   range: [0, 10000],
-  zoom: 10000
+  zoom: 10000,
+  useMean: false,
 };
 
 const stateReducer = (state: State, action: Action): State => {
@@ -41,6 +44,12 @@ const stateReducer = (state: State, action: Action): State => {
       return {
         ...state,
         autoadjustY: action.payload as boolean
+      };
+    }
+    case ACTIONS.UPDATE_USE_MEAN: {
+      return {
+        ...state,
+        useMean: action.payload as boolean
       };
     }
     case ACTIONS.UPDATE_ORIGINAL_DATA: {

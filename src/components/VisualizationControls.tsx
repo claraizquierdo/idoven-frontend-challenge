@@ -11,7 +11,7 @@ import VisualizationContext, { ACTIONS, Context } from '../context/Visualization
 
 function VisualizationControls() {
   const { state, dispatch } = useContext(VisualizationContext) as Context;
-  const { autoadjustY, range, zoom } = state;
+  const { autoadjustY, range, zoom, useMean } = state;
 
   const handleRangeChange = (event: Event, value: number | number[]): void => {
     if (Array.isArray(value) && value.length > 0) {
@@ -22,6 +22,10 @@ function VisualizationControls() {
 
   const handleAutoadjustY = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: ACTIONS.UPDATE_AUTOADJUST_Y, payload: event.target.checked });
+  };
+
+  const handleUseMean = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: ACTIONS.UPDATE_USE_MEAN, payload: event.target.checked });
   };
 
   const handleNext = () => {
@@ -46,6 +50,7 @@ function VisualizationControls() {
         data-testid="slider"
       />
       <Box sx={{
+        alignItems: 'start',
         display: 'flex',
         justifyContent: 'space-between'
       }}>
@@ -57,13 +62,23 @@ function VisualizationControls() {
           {`< Previous ${zoom} milliseconds`}
         </Button>
 
-        <FormControlLabel control={
-          <Checkbox
-            checked={autoadjustY}
-            onChange={handleAutoadjustY}
-          />
-        } label="Adjust Y axis values to selection" />
-
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
+          <FormControlLabel control={
+            <Checkbox
+              checked={autoadjustY}
+              onChange={handleAutoadjustY}
+            />
+          } label="Adjust Y axis values to selection" />
+          <FormControlLabel control={
+            <Checkbox
+              checked={useMean}
+              onChange={handleUseMean}
+            />
+          } label="Use mean when downsampling" />
+        </Box>
         <Button
           variant="contained"
           onClick={handleNext}

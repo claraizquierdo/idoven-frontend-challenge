@@ -6,7 +6,7 @@ import { useContext, useMemo } from "react";
 import Loading from './Loading';
 import VisualizationContext, { Context } from '../context/VisualizationContext';
 import VisualizationControls from './VisualizationControls';
-import { downsample } from '../utils/utils'
+import { downsample, downsampleWithMean } from '../utils/utils'
 
 const GRAPH_WIDTH = 1200;
 // In the original data, the samples are taken every 0.04 millisecons
@@ -23,21 +23,21 @@ function pairSamplesWithTime(samples: Int16Array, timeBetweenSamples: number, of
 
 function Visualization() {
   const { state } = useContext(VisualizationContext) as Context;
-  const { autoadjustY, originalData, isLoading, range } = state;
+  const { autoadjustY, originalData, isLoading, range, useMean } = state;
 
   const filteredData = useMemo(() => {
     const numberOfSamples = GRAPH_WIDTH;
     const rangeFirstIndex: number = transformMilisecondsToDataIndex(range[0]);
     const rangeLasterIndex: number = transformMilisecondsToDataIndex(range[1]);
     const zoomedSamples = originalData.subarray(rangeFirstIndex, rangeLasterIndex);
-    const downsampledValues = downsample(zoomedSamples, numberOfSamples);
+    const downsampledValues = useMean ? downsampleWithMean(zoomedSamples, numberOfSamples) : downsample(zoomedSamples, numberOfSamples);
     const reductionRate = Math.floor(zoomedSamples.length / numberOfSamples);
     const millisecondsBetweenSamples = MILLISECONDS_BETWEEN_ORIGINAL_SAMPLES * reductionRate;
 
     const result = pairSamplesWithTime(downsampledValues, millisecondsBetweenSamples, rangeFirstIndex * MILLISECONDS_BETWEEN_ORIGINAL_SAMPLES);
 
     return result;
-  }, [originalData, range])
+  }, [originalData, range, useMean])
 
   return (
     <Container sx={{ mt: 5 }}>
