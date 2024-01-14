@@ -67,6 +67,7 @@ const InputFile = () => {
         type="file"
         onChange={handleFileChange}
         placeholder="Select your file"
+        inputProps={{accept: '.csv'}}
       ></Input>
       <Box sx={{ pt: 2 }}>
         <span>Processed lines: {readLines}</span>
